@@ -26,9 +26,9 @@ class ProfileAdapter(
 
     inner class ViewHolder(private val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(itemData: ApiResponse.Result?) {
-            binding.tvName.text = "${itemData?.name?.title}. ${itemData?.name?.first} ${itemData?.name?.last}"
-            binding.tvAge.text = "${itemData?.dob?.age} Years"
-            binding.tvAddress.text = "${itemData?.location?.city}, ${itemData?.location?.state}"
+            binding.tvName.text = "${itemData?.name?.title} ${itemData?.name?.first} ${itemData?.name?.last}"
+            binding.tvAge.text = "${itemData?.dob?.age}"
+            binding.tvAddress.text = "${itemData?.location?.city} ${itemData?.location?.state}"
             Glide.with(binding.ivProfile.context)
                 .load(itemData?.picture?.large)
                 .into(binding.ivProfile)

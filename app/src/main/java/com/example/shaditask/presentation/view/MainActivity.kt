@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getRemoteProfiles()
         viewModel.routeRemoteProfiles.observe(this) {
             data.clear()
-            data.addAll(it.results!!)
+            data.addAll(it)
             profileAdapter.notifyDataSetChanged()
         }
     }

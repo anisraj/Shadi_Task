@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shaditask.data.model.ApiResponse
+import com.example.shaditask.domain.usecase.GetLocalProfilesUseCase
 import com.example.shaditask.domain.usecase.GetRemoteProfilesUseCase
+import com.example.shaditask.domain.usecase.SaveProfilesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,16 +15,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getRemoteProfilesUseCase: GetRemoteProfilesUseCase
+    private val getRemoteProfilesUseCase: GetRemoteProfilesUseCase,
+    private val saveProfilesUseCase: SaveProfilesUseCase,
+    private val getLocalProfilesUseCase: GetLocalProfilesUseCase
 ) : ViewModel() {
-    private val remoteProfiles = MutableLiveData<ApiResponse>()
-    val routeRemoteProfiles: LiveData<ApiResponse> = remoteProfiles
+    private val remoteProfiles = MutableLiveData<List<ApiResponse.Result>>()
+    val routeRemoteProfiles: LiveData<List<ApiResponse.Result>> = remoteProfiles
 
     fun getRemoteProfiles() {
         viewModelScope.launch(Dispatchers.IO) {
             val apiResult = getRemoteProfilesUseCase.execute()
             if (apiResult.isSuccessful) {
-                remoteProfiles.postValue(apiResult.body())
+                for(item in apiResult.body()?.results!!) {
+                    if (item != null) {
+                        viewModelScope.launch {
+                            saveProfilesUseCase.execute(item)
+                        }
+                    }
+                }
+                getLocalProfiles()
+            }
+        }
+    }
+
+    fun getLocalProfiles() {
+        viewModelScope.launch {
+            getLocalProfilesUseCase.execute().collect {
+                remoteProfiles.postValue(it)
             }
         }
     }
