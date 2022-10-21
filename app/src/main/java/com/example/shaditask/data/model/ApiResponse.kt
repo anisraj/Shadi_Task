@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose
 data class ApiResponse(
     @SerializedName("results")
     @Expose
-    val results: List<Result?>?,
+    val results: ArrayList<Result?>?,
     @SerializedName("info")
     @Expose
     val info: Info?
