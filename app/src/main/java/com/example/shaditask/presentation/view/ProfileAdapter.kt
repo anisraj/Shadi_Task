@@ -20,13 +20,13 @@ class ProfileAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(data[position], holder.adapterPosition)
     }
 
     override fun getItemCount() = data.size
 
     inner class ViewHolder(private val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(itemData: ApiResponse.Result?) {
+        fun bind(itemData: ApiResponse.Result?, position: Int) {
             if (itemData?.isAccepted == true) {
                 binding.llBtns.visibility = View.GONE
                 binding.llAction.visibility = View.VISIBLE
@@ -40,7 +40,7 @@ class ProfileAdapter(
                 binding.llAction.visibility = View.GONE
             }
             binding.tvName.text = "${itemData?.name?.title} ${itemData?.name?.first} ${itemData?.name?.last}"
-            binding.tvAge.text = "${itemData?.dob?.age}"
+            binding.tvAge.text = "${itemData?.dob?.age} Years"
             binding.tvAddress.text = "${itemData?.location?.city} ${itemData?.location?.state}"
             Glide.with(binding.ivProfile.context)
                 .load(itemData?.picture?.large)

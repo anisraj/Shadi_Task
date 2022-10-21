@@ -6,7 +6,7 @@ import com.example.shaditask.data.model.ApiResponse
 class LocationConverter {
     @TypeConverter
     fun fromSource(source: ApiResponse.Result.Location): String? {
-        return "${source.city}, ${source.state}"
+        return "${source.city} ${source.state}"
     }
 
     @TypeConverter

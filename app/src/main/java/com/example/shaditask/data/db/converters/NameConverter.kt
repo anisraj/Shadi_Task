@@ -6,7 +6,7 @@ import com.example.shaditask.data.model.ApiResponse
 class NameConverter {
     @TypeConverter
     fun fromSource(source: ApiResponse.Result.Name): String? {
-        return "${source.title}. ${source.first} ${source.last}"
+        return "${source.title} ${source.first} ${source.last}"
     }
 
     @TypeConverter

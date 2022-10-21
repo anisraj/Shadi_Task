@@ -6,7 +6,7 @@ import com.example.shaditask.data.model.ApiResponse
 class DobConverter {
     @TypeConverter
     fun fromSource(source: ApiResponse.Result.Dob): String? {
-        return "${source.age} Years"
+        return "${source.age}"
     }
 
     @TypeConverter

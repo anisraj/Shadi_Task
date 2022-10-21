@@ -9,6 +9,7 @@ import com.example.shaditask.domain.usecase.GetLocalProfilesUseCase
 import com.example.shaditask.domain.usecase.GetRemoteProfilesUseCase
 import com.example.shaditask.domain.usecase.SaveProfilesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,9 +22,12 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val remoteProfiles = MutableLiveData<List<ApiResponse.Result>>()
     val routeRemoteProfiles: LiveData<List<ApiResponse.Result>> = remoteProfiles
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        onError(exception)
+    }
 
-    fun getRemoteProfiles() {
-        viewModelScope.launch(Dispatchers.IO) {
+    private fun getRemoteProfiles() {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val apiResult = getRemoteProfilesUseCase.execute()
             if (apiResult.isSuccessful) {
                 remoteProfiles.postValue(apiResult.body()?.results!! as List<ApiResponse.Result>?)
@@ -39,7 +43,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getLocalProfiles() {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
             getLocalProfilesUseCase.execute().collect {
                 if (it.isEmpty()) {
                     getRemoteProfiles()
@@ -51,7 +55,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateProfile(data: ApiResponse.Result, action: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
             if (action) {
                 data.isAccepted = true
             } else {
@@ -60,5 +64,9 @@ class MainViewModel @Inject constructor(
             saveProfilesUseCase.execute(data)
             getLocalProfiles()
         }
+    }
+
+    private fun onError(throwable: Throwable) {
+        throwable.printStackTrace()
     }
 }
