@@ -11,14 +11,14 @@ import com.google.gson.annotations.Expose
 data class ApiResponse(
     @SerializedName("results")
     @Expose
-    val results: ArrayList<Result?>?
+    val results: List<Result?>?
 ) {
     @Entity(tableName = VariableConstants.TABLE_NAME)
     data class Result(
         @PrimaryKey(autoGenerate = true)
         val profileId: Int? = null,
-        val isAccepted: Boolean = false,
-        val isRejected: Boolean = false,
+        var isAccepted: Boolean = false,
+        var isRejected: Boolean = false,
         @SerializedName("gender")
         @Expose
         val gender: String?,

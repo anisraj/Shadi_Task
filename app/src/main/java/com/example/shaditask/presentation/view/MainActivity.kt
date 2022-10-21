@@ -25,6 +25,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerview() {
         profileAdapter = ProfileAdapter(data)
+        profileAdapter.setAcceptClickListener { result ->
+            viewModel.updateProfile(result, true)
+        }
+        profileAdapter.setRejectClickListener { result ->
+            viewModel.updateProfile(result, false)
+        }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = profileAdapter
@@ -32,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun viewProfileList() {
-        viewModel.getRemoteProfiles()
+        viewModel.getLocalProfiles()
         viewModel.routeRemoteProfiles.observe(this) {
             data.clear()
             data.addAll(it)

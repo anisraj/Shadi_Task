@@ -26,6 +26,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val apiResult = getRemoteProfilesUseCase.execute()
             if (apiResult.isSuccessful) {
+                remoteProfiles.postValue(apiResult.body()?.results!! as List<ApiResponse.Result>?)
                 for(item in apiResult.body()?.results!!) {
                     if (item != null) {
                         viewModelScope.launch {
@@ -33,7 +34,6 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
-                getLocalProfiles()
             }
         }
     }
@@ -41,8 +41,24 @@ class MainViewModel @Inject constructor(
     fun getLocalProfiles() {
         viewModelScope.launch {
             getLocalProfilesUseCase.execute().collect {
-                remoteProfiles.postValue(it)
+                if (it.isEmpty()) {
+                    getRemoteProfiles()
+                } else {
+                    remoteProfiles.postValue(it)
+                }
             }
+        }
+    }
+
+    fun updateProfile(data: ApiResponse.Result, action: Boolean) {
+        viewModelScope.launch {
+            if (action) {
+                data.isAccepted = true
+            } else {
+                data.isRejected = true
+            }
+            saveProfilesUseCase.execute(data)
+            getLocalProfiles()
         }
     }
 }
