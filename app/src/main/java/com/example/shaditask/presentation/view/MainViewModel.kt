@@ -22,6 +22,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val remoteProfiles = MutableLiveData<List<ApiResponse.Result>>()
     val routeRemoteProfiles: LiveData<List<ApiResponse.Result>> = remoteProfiles
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
         onError(exception)
     }
